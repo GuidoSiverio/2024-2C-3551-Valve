@@ -21,7 +21,7 @@ namespace TGC.MonoGame.TP.Content.Models
 
         public RockScene(ContentManager content)
         {
-            Model = content.Load<Model>(ContentFolder3D + "escena/taş");
+            Model = content.Load<Model>(ContentFolder3D + "escena/Rock_1");
 
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
 

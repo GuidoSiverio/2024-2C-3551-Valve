@@ -38,7 +38,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/escena/plant.fbx
 
-#begin Models/escena/taş.fbx
+#begin Models/escena/Rock_1.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -55,7 +55,7 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:Models/escena/taş.fbx
+/build:Models/escena/Rock_1.fbx
 
 #begin Models/Panzer/Panzer.fbx
 /importer:FbxImporter
