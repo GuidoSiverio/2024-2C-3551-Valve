@@ -8,7 +8,6 @@ using System.Text;
 
 namespace TGC.MonoGame.TP.Content.Models
 {
-
     class ArbolScene
     {
         public const string ContentFolder3D = "Models/";
@@ -16,13 +15,16 @@ namespace TGC.MonoGame.TP.Content.Models
 
         private Model Model { get; set; }
 
-        public const float Distance = 2100f;
+        public const float MaxDistance = 5100f;
+        public const float MinDistance = 200f;
+
 
         private List<Matrix> WorldMatrices { get; set; }
 
         private Effect Effect { get; set; }
+        private static Random random = new Random();
 
-        public ArbolScene(ContentManager content)
+        public ArbolScene(ContentManager content, int numberOfModels)
         {
             Model = content.Load<Model>(ContentFolder3D + "escena/plant");
 
@@ -34,18 +36,30 @@ namespace TGC.MonoGame.TP.Content.Models
                     meshPart.Effect = Effect;
             }
 
-            WorldMatrices = new List<Matrix>()
+            WorldMatrices = new List<Matrix>();
+            for (int i = 0; i < numberOfModels; i++)
             {
-                Matrix.Identity,
-                Matrix.CreateTranslation(Vector3.Right * Distance),
-                Matrix.CreateTranslation(Vector3.Left * Distance),
-                Matrix.CreateTranslation(Vector3.Forward * Distance),
-                Matrix.CreateTranslation(Vector3.Backward * Distance),
-                Matrix.CreateTranslation((Vector3.Forward + Vector3.Right) * Distance),
-                Matrix.CreateTranslation((Vector3.Forward + Vector3.Left) * Distance),
-                Matrix.CreateTranslation((Vector3.Backward + Vector3.Right) * Distance),
-                Matrix.CreateTranslation((Vector3.Backward + Vector3.Left) * Distance),
-            };
+                Vector3 newPosition;
+                bool positionAccepted;
+                do
+                {
+                    float randomX = (float)(random.NextDouble() * 2 - 1) * MaxDistance;
+                    float randomY = 0;
+                    float randomZ = (float)(random.NextDouble() * 2 - 1) * MaxDistance;
+                    newPosition = new Vector3(randomX, randomY, randomZ);
+                    positionAccepted = true;
+                    foreach (var matrix in WorldMatrices)
+                    {
+                        if (Vector3.Distance(newPosition, matrix.Translation) < MinDistance)
+                        {
+                            positionAccepted = false;
+                            break;
+                        }
+                    }
+                } while (!positionAccepted);
+
+                WorldMatrices.Add(Matrix.CreateTranslation(newPosition));
+            }
         }
 
         public void Draw(Matrix world, Matrix view, Matrix projection)
@@ -68,9 +82,6 @@ namespace TGC.MonoGame.TP.Content.Models
                     mesh.Draw();
                 }
             }
-
-
-
         }
     }
 }
