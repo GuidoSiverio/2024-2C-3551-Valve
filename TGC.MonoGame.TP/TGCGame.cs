@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -26,10 +25,10 @@ namespace TGC.MonoGame.TP
         {
             // Maneja la configuracion y la administracion del dispositivo grafico.
             Graphics = new GraphicsDeviceManager(this);
-            
+
             Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
-            
+
             // Para que el juego sea pantalla completa se puede usar Graphics IsFullScreen.
             // Carpeta raiz donde va a estar toda la Media.
             Content.RootDirectory = "Content";
@@ -40,13 +39,13 @@ namespace TGC.MonoGame.TP
         private GraphicsDeviceManager Graphics { get; }
         private Model Panzer { get; set; }
         private Effect PanzerEffect { get; set; }
-        private Effect SceneEffect {  get; set; }
+        private Effect SceneEffect { get; set; }
         private Matrix World { get; set; }
         public SpriteBatch SpriteBatch { get; set; }
         private Matrix View { get; set; }
         private Matrix Projection { get; set; }
 
-        //private FollowCamera FollowCamera { get; set; }
+        private FreeCamera FreeCamera { get; set; }
         //private float Rotation { get; set; }
 
         /// <summary>
@@ -55,17 +54,17 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void Initialize()
         {
-
             var rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rasterizerState;
 
-            
+            FreeCamera = new FreeCamera(Vector3.Zero, 1000f, 0.5f);
 
-            World = Matrix.Identity*Matrix.CreateScale(1,1,1)*Matrix.CreateTranslation(0,-20,200);
-            View = Matrix.CreateLookAt(Vector3.One * 8000, Vector3.Zero, Vector3.Up);
+            World = Matrix.Identity * Matrix.CreateScale(1, 1, 1) * Matrix.CreateTranslation(0, -20, 200);
+            View = Matrix.CreateLookAt(Vector3.One * 2500, new Vector3(0, 0, 0), Vector3.Up);
             Projection =
-                 Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.1f, 2500000f);
+                Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.1f,
+                    2500000f);
 
             base.Initialize();
         }
@@ -77,7 +76,6 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
-        
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             Panzer = Content.Load<Model>(ContentFolder3D + "Panzer/Panzer");
             PanzerEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
@@ -94,7 +92,6 @@ namespace TGC.MonoGame.TP
             }
 
 
-
             base.LoadContent();
         }
 
@@ -102,13 +99,16 @@ namespace TGC.MonoGame.TP
         protected override void Update(GameTime gameTime)
         {
             // Aca deberiamos poner toda la logica de actualizacion del juego.
-
             // Capturar Input teclado
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 //Salgo del juego.
                 Exit();
             }
+
+            KeyboardState keyboardState = Keyboard.GetState();
+            MouseState mouseState = Mouse.GetState();
+            FreeCamera.Update(gameTime, keyboardState, mouseState);
 
             //Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
 
@@ -121,38 +121,24 @@ namespace TGC.MonoGame.TP
 
         protected override void Draw(GameTime gameTime)
         {
-
             GraphicsDevice.Clear(Color.Black);
-
+            Matrix View = FreeCamera.ViewMatrix;
             Arbol.Draw(Matrix.Identity, View, Projection);
-
-
-            var randomRoca = new Random(0);
-            for(int i=0; i<100; i++)
-            {
-                var traslacion = new Vector3(randomRoca.NextSingle() *10000f -5000f, randomRoca.NextSingle(), randomRoca.NextSingle() * 10000f - 5000f);
-
-                Roca.Draw(World * Matrix.CreateTranslation(traslacion), View, Projection);
-            }
-            
 
             PanzerEffect.Parameters["View"].SetValue(View);
             PanzerEffect.Parameters["Projection"].SetValue(Projection);
             PanzerEffect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector3());
 
-            
+
             var modelMeshesBaseTransforms = new Matrix[Panzer.Bones.Count];
             Panzer.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
 
             foreach (var mesh in Panzer.Meshes)
-             {
+            {
                 var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
                 PanzerEffect.Parameters["World"].SetValue(relativeTransform * World);
                 mesh.Draw();
-             }
-
-            
-
+            }
         }
 
         /// <summary>
