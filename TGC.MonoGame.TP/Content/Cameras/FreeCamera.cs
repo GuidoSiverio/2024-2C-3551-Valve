@@ -10,7 +10,8 @@ public class FreeCamera
 
     private float speed;
     private float rotationSpeed;
-    
+    private Vector2 previousMousePosition;
+
     public Matrix ViewMatrix { get; set; }
 
     public FreeCamera(Vector3 startPosition, float speed, float rotationSpeed)
@@ -20,16 +21,33 @@ public class FreeCamera
         Pitch = 0.0f;
         this.speed = speed;
         this.rotationSpeed = rotationSpeed;
+        previousMousePosition = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
         UpdateViewMatrix();
     }
 
     public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState)
     {
-        float deltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
+        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
         
-        Vector3 forward = new Vector3((float) Math.Sin(Yaw),0,(float) Math.Cos(Yaw));
+        Vector2 mousePosition = mouseState.Position.ToVector2();
+        Vector2 delta = mousePosition - previousMousePosition;
+        previousMousePosition = mousePosition;
+
+        float deltaX = -delta.X * rotationSpeed * deltaTime;
+        float deltaY = delta.Y * rotationSpeed * deltaTime;
+
+        Yaw -= deltaX;
+        Pitch -= deltaY;
+
+        Pitch = MathHelper.Clamp(Pitch, -MathHelper.PiOver2, MathHelper.PiOver2);
+        UpdateViewMatrix();
+
+
+        Vector3 forward = Vector3.Transform(Vector3.Forward, Matrix.CreateFromYawPitchRoll(Yaw, Pitch, 0));
+        Vector3 right = Vector3.Transform(Vector3.Forward, Matrix.CreateFromYawPitchRoll(Yaw, Pitch, 0));
+    
         forward.Normalize();
-        Vector3 right = new Vector3(-forward.Z,0,forward.X);
+        right.Normalize();
         if (keyboardState.IsKeyDown(Keys.W))
             Position += forward * speed * deltaTime;
         if (keyboardState.IsKeyDown(Keys.S))
@@ -38,19 +56,14 @@ public class FreeCamera
             Position -= right * speed * deltaTime;
         if (keyboardState.IsKeyDown(Keys.D))
             Position += right * speed * deltaTime;
-        float deltaX = mouseState.X * rotationSpeed * deltaTime;
-        float deltaY = mouseState.Y * rotationSpeed * deltaTime;
         
-        Yaw -= deltaX;
-        Pitch -= deltaY;
-        
-        Pitch = MathHelper.Clamp(Pitch, -MathHelper.PiOver2, MathHelper.PiOver2);
         UpdateViewMatrix();
     }
 
     private void UpdateViewMatrix()
     {
-        Vector3 forward = new Vector3((float)Math.Cos(Pitch) * (float)Math.Cos(Yaw), (float)Math.Sin(Pitch), (float)Math.Cos(Pitch) * (float)Math.Sin(Yaw));
+        Vector3 forward = new Vector3((float)Math.Cos(Pitch) * (float)Math.Cos(Yaw), (float)Math.Sin(Pitch),
+            (float)Math.Cos(Pitch) * (float)Math.Sin(Yaw));
         forward.Normalize();
 
         ViewMatrix = Matrix.CreateLookAt(Position, Position + forward, Vector3.Up);

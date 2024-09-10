@@ -58,7 +58,7 @@ namespace TGC.MonoGame.TP
             rasterizerState.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rasterizerState;
 
-            FreeCamera = new FreeCamera(Vector3.Zero, 10f, 0.01f);
+            FreeCamera = new FreeCamera(Vector3.Zero, 1000f, 0.5f);
 
             World = Matrix.Identity * Matrix.CreateScale(1, 1, 1) * Matrix.CreateTranslation(0, -20, 200);
             View = Matrix.CreateLookAt(Vector3.One * 2500, new Vector3(0, 0, 0), Vector3.Up);
