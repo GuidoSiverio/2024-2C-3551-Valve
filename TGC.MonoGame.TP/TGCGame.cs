@@ -17,6 +17,7 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderTextures = "Textures/";
 
         private ArbolScene Arbol {  get; set; }
+        private RockScene Roca { get; set; }
 
         /// <summary>
         ///     Constructor del juego.
@@ -62,7 +63,7 @@ namespace TGC.MonoGame.TP
             
 
             World = Matrix.Identity*Matrix.CreateScale(1,1,1)*Matrix.CreateTranslation(0,-20,200);
-            View = Matrix.CreateLookAt(Vector3.One * 2500, new Vector3(0,0,0), Vector3.Up);
+            View = Matrix.CreateLookAt(Vector3.One * 8000, Vector3.Zero, Vector3.Up);
             Projection =
                  Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.1f, 2500000f);
 
@@ -82,7 +83,7 @@ namespace TGC.MonoGame.TP
             PanzerEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
             SceneEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
             Arbol = new ArbolScene(Content);
-
+            Roca = new RockScene(Content);
 
 
             foreach (var mesh in Panzer.Meshes)
@@ -125,13 +126,22 @@ namespace TGC.MonoGame.TP
 
             Arbol.Draw(Matrix.Identity, View, Projection);
 
+
+            var randomRoca = new Random(0);
+            for(int i=0; i<100; i++)
+            {
+                var traslacion = new Vector3(randomRoca.NextSingle() *10000f -5000f, randomRoca.NextSingle(), randomRoca.NextSingle() * 10000f - 5000f);
+
+                Roca.Draw(World * Matrix.CreateTranslation(traslacion), View, Projection);
+            }
+            
+
             PanzerEffect.Parameters["View"].SetValue(View);
             PanzerEffect.Parameters["Projection"].SetValue(Projection);
             PanzerEffect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector3());
 
             
             var modelMeshesBaseTransforms = new Matrix[Panzer.Bones.Count];
-
             Panzer.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
 
             foreach (var mesh in Panzer.Meshes)
