@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TGC.MonoGame.TP.Content.Models;
 
 
 namespace TGC.MonoGame.TP
@@ -14,6 +15,8 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSounds = "Sounds/";
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
+
+        private ArbolScene Arbol {  get; set; }
 
         /// <summary>
         ///     Constructor del juego.
@@ -36,13 +39,14 @@ namespace TGC.MonoGame.TP
         private GraphicsDeviceManager Graphics { get; }
         private Model Panzer { get; set; }
         private Effect PanzerEffect { get; set; }
+        private Effect SceneEffect {  get; set; }
         private Matrix World { get; set; }
         public SpriteBatch SpriteBatch { get; set; }
         private Matrix View { get; set; }
         private Matrix Projection { get; set; }
 
-        private FollowCamera FollowCamera { get; set; }
-        private float Rotation { get; set; }
+        //private FollowCamera FollowCamera { get; set; }
+        //private float Rotation { get; set; }
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -58,9 +62,9 @@ namespace TGC.MonoGame.TP
             
 
             World = Matrix.Identity*Matrix.CreateScale(1,1,1)*Matrix.CreateTranslation(0,-20,200);
-            View = Matrix.CreateLookAt(new Vector3(10,-400,100), new Vector3(0,0,0), Vector3.Up);
+            View = Matrix.CreateLookAt(Vector3.One * 2500, new Vector3(0,0,0), Vector3.Up);
             Projection =
-                 Matrix.CreatePerspectiveFieldOfView(2.4f, GraphicsDevice.Viewport.AspectRatio, 1, 400);
+                 Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.1f, 2500000f);
 
             base.Initialize();
         }
@@ -73,14 +77,22 @@ namespace TGC.MonoGame.TP
         protected override void LoadContent()
         {
         
-        SpriteBatch = new SpriteBatch(GraphicsDevice);
-        Panzer = Content.Load<Model>(ContentFolder3D + "Panzer/Panzer");
-        PanzerEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            Panzer = Content.Load<Model>(ContentFolder3D + "Panzer/Panzer");
+            PanzerEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            SceneEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            Arbol = new ArbolScene(Content);
 
-    foreach (var mesh in Panzer.Meshes)
-        // Un mesh puede tener mas de una mesh part (cada una puede tener su propio efecto).
-        foreach (var meshPart in mesh.MeshParts)
-            meshPart.Effect = PanzerEffect;
+
+
+            foreach (var mesh in Panzer.Meshes)
+            {
+                // Un mesh puede tener mas de una mesh part (cada una puede tener su propio efecto).
+                foreach (var meshPart in mesh.MeshParts)
+                    meshPart.Effect = PanzerEffect;
+            }
+
+
 
             base.LoadContent();
         }
@@ -109,22 +121,27 @@ namespace TGC.MonoGame.TP
         protected override void Draw(GameTime gameTime)
         {
 
-        GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.Black);
 
-        PanzerEffect.Parameters["View"].SetValue(View);
-        PanzerEffect.Parameters["Projection"].SetValue(Projection);
-        PanzerEffect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector3());
+            Arbol.Draw(Matrix.Identity, View, Projection);
 
-        var modelMeshesBaseTransforms = new Matrix[Panzer.Bones.Count];
+            PanzerEffect.Parameters["View"].SetValue(View);
+            PanzerEffect.Parameters["Projection"].SetValue(Projection);
+            PanzerEffect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector3());
 
-        Panzer.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
+            
+            var modelMeshesBaseTransforms = new Matrix[Panzer.Bones.Count];
 
-        foreach (var mesh in Panzer.Meshes)
-         {
-            var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
-            PanzerEffect.Parameters["World"].SetValue(relativeTransform * World);
-            mesh.Draw();
-         }
+            Panzer.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
+
+            foreach (var mesh in Panzer.Meshes)
+             {
+                var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
+                PanzerEffect.Parameters["World"].SetValue(relativeTransform * World);
+                mesh.Draw();
+             }
+
+            
 
         }
 
