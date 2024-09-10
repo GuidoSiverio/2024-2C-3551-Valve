@@ -28,24 +28,20 @@ public class FreeCamera
     public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState)
     {
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        
+
         Vector2 mousePosition = mouseState.Position.ToVector2();
         Vector2 delta = mousePosition - previousMousePosition;
         previousMousePosition = mousePosition;
 
-        float deltaX = -delta.X * rotationSpeed * deltaTime;
-        float deltaY = delta.Y * rotationSpeed * deltaTime;
-
-        Yaw -= deltaX;
-        Pitch -= deltaY;
+        Yaw += delta.X * rotationSpeed * deltaTime;
+        Pitch -= delta.Y * rotationSpeed * deltaTime;
 
         Pitch = MathHelper.Clamp(Pitch, -MathHelper.PiOver2, MathHelper.PiOver2);
-        UpdateViewMatrix();
 
+        Matrix cameraRotation = Matrix.CreateFromYawPitchRoll(Yaw, Pitch, 0.0f);
+        Vector3 forward = Vector3.Transform(Vector3.Forward, cameraRotation);
+        Vector3 right = Vector3.Transform(Vector3.Right, cameraRotation);
 
-        Vector3 forward = Vector3.Transform(Vector3.Forward, Matrix.CreateFromYawPitchRoll(Yaw, Pitch, 0));
-        Vector3 right = Vector3.Transform(Vector3.Forward, Matrix.CreateFromYawPitchRoll(Yaw, Pitch, 0));
-    
         forward.Normalize();
         right.Normalize();
         if (keyboardState.IsKeyDown(Keys.W))
@@ -56,7 +52,6 @@ public class FreeCamera
             Position -= right * speed * deltaTime;
         if (keyboardState.IsKeyDown(Keys.D))
             Position += right * speed * deltaTime;
-        
         UpdateViewMatrix();
     }
 

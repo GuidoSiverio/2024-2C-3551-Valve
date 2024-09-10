@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -80,7 +79,7 @@ namespace TGC.MonoGame.TP
             Panzer = Content.Load<Model>(ContentFolder3D + "Panzer/Panzer");
             PanzerEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
             SceneEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
-            Arbol = new ArbolScene(Content, 50);
+            Arbol = new ArbolScene(Content, 100);
 
 
             foreach (var mesh in Panzer.Meshes)
@@ -105,7 +104,9 @@ namespace TGC.MonoGame.TP
                 Exit();
             }
 
-            FreeCamera.Update(gameTime, Keyboard.GetState(), Mouse.GetState());
+            KeyboardState keyboardState = Keyboard.GetState();
+            MouseState mouseState = Mouse.GetState();
+            FreeCamera.Update(gameTime, keyboardState, mouseState);
 
             //Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
 

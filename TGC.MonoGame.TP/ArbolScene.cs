@@ -3,8 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace TGC.MonoGame.TP.Content.Models
 {
@@ -15,8 +13,8 @@ namespace TGC.MonoGame.TP.Content.Models
 
         private Model Model { get; set; }
 
-        public const float MaxDistance = 5100f;
-        public const float MinDistance = 200f;
+        public const float MaxDistance = 10000f;
+        public const float MinDistance = 1000f;
 
 
         private List<Matrix> WorldMatrices { get; set; }
