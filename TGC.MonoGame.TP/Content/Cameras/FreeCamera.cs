@@ -4,13 +4,13 @@ using Microsoft.Xna.Framework.Input;
 
 public class FreeCamera
 {
-    public Vector3 Position { get; set; }
-    public float Yaw { get; set; }
-    public float Pitch { get; set; }
+    private Vector3 Position { get; set; }
+    private float Yaw { get; set; }
+    private float Pitch { get; set; }
 
-    private float speed;
-    private float rotationSpeed;
-    private Vector2 previousMousePosition;
+    private readonly float _speed;
+    private readonly float _rotationSpeed;
+    private Vector2 _previousMousePosition;
 
     public Matrix ViewMatrix { get; set; }
 
@@ -19,9 +19,9 @@ public class FreeCamera
         Position = startPosition;
         Yaw = 0.0f;
         Pitch = 0.0f;
-        this.speed = speed;
-        this.rotationSpeed = rotationSpeed;
-        previousMousePosition = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
+        _speed = speed;
+        _rotationSpeed = rotationSpeed;
+        _previousMousePosition = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
         UpdateViewMatrix();
     }
 
@@ -30,11 +30,11 @@ public class FreeCamera
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         Vector2 mousePosition = mouseState.Position.ToVector2();
-        Vector2 delta = mousePosition - previousMousePosition;
-        previousMousePosition = mousePosition;
+        Vector2 delta = mousePosition - _previousMousePosition;
+        _previousMousePosition = mousePosition;
 
-        Yaw += delta.X * rotationSpeed * deltaTime;
-        Pitch -= delta.Y * rotationSpeed * deltaTime;
+        Yaw += delta.X * _rotationSpeed * deltaTime;
+        Pitch -= delta.Y * _rotationSpeed * deltaTime;
 
         Pitch = MathHelper.Clamp(Pitch, -MathHelper.PiOver2, MathHelper.PiOver2);
 
@@ -45,13 +45,13 @@ public class FreeCamera
         forward.Normalize();
         right.Normalize();
         if (keyboardState.IsKeyDown(Keys.W))
-            Position += forward * speed * deltaTime;
+            Position += forward * _speed * deltaTime;
         if (keyboardState.IsKeyDown(Keys.S))
-            Position -= forward * speed * deltaTime;
+            Position -= forward * _speed * deltaTime;
         if (keyboardState.IsKeyDown(Keys.A))
-            Position -= right * speed * deltaTime;
+            Position -= right * _speed * deltaTime;
         if (keyboardState.IsKeyDown(Keys.D))
-            Position += right * speed * deltaTime;
+            Position += right * _speed * deltaTime;
         UpdateViewMatrix();
     }
 

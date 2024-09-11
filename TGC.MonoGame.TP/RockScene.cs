@@ -65,6 +65,7 @@ namespace TGC.MonoGame.TP.Content.Models
 
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(projection);
+            Effect.Parameters["DiffuseColor"].SetValue(Color.Brown.ToVector3());
 
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
