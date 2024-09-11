@@ -1,11 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BepuPhysics.Constraints;
 
 namespace TGC.MonoGame.TP.Content.Models
 {
@@ -18,8 +15,13 @@ namespace TGC.MonoGame.TP.Content.Models
         private Model Model { get; set; }
 
         private Effect Effect { get; set; }
+        private List<Matrix> WorldMatrices { get; set; }
 
-        public RockScene(ContentManager content)
+        
+        public const float MaxDistance = 10000f;
+        public const float MinDistance = 1000f;
+        private static Random random = new Random();
+        public RockScene(ContentManager content, int numberOfModels)
         {
             Model = content.Load<Model>(ContentFolder3D + "escena/Rock_1");
 
@@ -30,11 +32,37 @@ namespace TGC.MonoGame.TP.Content.Models
                 foreach (var meshPart in mesh.MeshParts)
                     meshPart.Effect = Effect;
             }
+            WorldMatrices = new List<Matrix>();
 
+            for (int i = 0; i < numberOfModels; i++)
+            {
+                Vector3 newPosition;
+                bool positionAccepted;
+                do
+                {
+                    float randomX = (float)(random.NextDouble() * 2 - 1) * MaxDistance;
+                    float randomY = 0;
+                    float randomZ = (float)(random.NextDouble() * 2 - 1) * MaxDistance;
+                    newPosition = new Vector3(randomX, randomY, randomZ);
+                    positionAccepted = true;
+                    foreach (var matrix in WorldMatrices)
+                    {
+                        if (Vector3.Distance(newPosition, matrix.Translation) < MinDistance)
+                        {
+                            positionAccepted = false;
+                            break;
+                        }
+                    }
+                } while (!positionAccepted);
+
+                WorldMatrices.Add(Matrix.CreateTranslation(newPosition));
+            }
         }
 
         public void Draw(Matrix world, Matrix view, Matrix projection)
         {
+            Effect.Parameters["World"].SetValue(world);
+
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(projection);
 
@@ -45,8 +73,12 @@ namespace TGC.MonoGame.TP.Content.Models
             {
                 var meshWorld = modelMeshesBaseTransforms[mesh.ParentBone.Index];
 
-                Effect.Parameters["World"].SetValue(meshWorld * world);
-                mesh.Draw();
+                foreach (var worldMatrix in WorldMatrices)
+                {
+                    Effect.Parameters["World"].SetValue(meshWorld * worldMatrix);
+
+                    mesh.Draw();
+                }
             }
 
         }

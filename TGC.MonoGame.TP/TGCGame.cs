@@ -80,8 +80,8 @@ namespace TGC.MonoGame.TP
             Panzer = Content.Load<Model>(ContentFolder3D + "Panzer/Panzer");
             PanzerEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
             SceneEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
-            Arbol = new ArbolScene(Content);
-            Roca = new RockScene(Content);
+            Arbol = new ArbolScene(Content,50);
+            Roca = new RockScene(Content,50);
 
 
             foreach (var mesh in Panzer.Meshes)
@@ -124,6 +124,8 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.Clear(Color.Black);
             Matrix View = FreeCamera.ViewMatrix;
             Arbol.Draw(Matrix.Identity, View, Projection);
+            Roca.Draw(Matrix.Identity, View, Projection);
+
 
             PanzerEffect.Parameters["View"].SetValue(View);
             PanzerEffect.Parameters["Projection"].SetValue(Projection);
