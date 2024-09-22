@@ -8,6 +8,7 @@ namespace TGC.MonoGame.TP
 {
     public class TGCGame : Game
     {
+        //ubicacion de modelos, efectos, sonidos y textura
         public const string ContentFolder3D = "Models/";
         public const string ContentFolderEffects = "Effects/";
         public const string ContentFolderMusic = "Music/";
@@ -15,82 +16,54 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
 
+        private GraphicsDeviceManager Graphics { get; }
+
+        //Matriz mundo, vista y proyeccion
+        private Matrix World { get; set; }
+        private Matrix View { get; set; }
+        private Matrix Projection { get; set; }
+
+
+        //modelos, efectos y camara 
+        private TankScene Panzer { get; set; }
         private ArbolScene Arbol {  get; set; }
         private RockScene Roca { get; set; }
+        public SpriteBatch SpriteBatch { get; set; }//esto para que sera ?
 
-        /// <summary>
-        ///     Constructor del juego.
-        /// </summary>
+        private FreeCamera FreeCamera { get; set; }
+
         public TGCGame()
         {
             // Maneja la configuracion y la administracion del dispositivo grafico.
             Graphics = new GraphicsDeviceManager(this);
-
             Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
 
-            // Para que el juego sea pantalla completa se puede usar Graphics IsFullScreen.
-            // Carpeta raiz donde va a estar toda la Media.
             Content.RootDirectory = "Content";
-            // Hace que el mouse sea visible.
+
             IsMouseVisible = true;
         }
 
-        private GraphicsDeviceManager Graphics { get; }
-        private Model Panzer { get; set; }
-        private Effect PanzerEffect { get; set; }
-        private Effect SceneEffect { get; set; }
-        private Matrix World { get; set; }
-        public SpriteBatch SpriteBatch { get; set; }
-        private Matrix View { get; set; }
-        private Matrix Projection { get; set; }
-
-        private FreeCamera FreeCamera { get; set; }
-        //private float Rotation { get; set; }
-
-        /// <summary>
-        ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
-        ///     Escribir aqui el codigo de inicializacion: el procesamiento que podemos pre calcular para nuestro juego.
-        /// </summary>
         protected override void Initialize()
         {
-            var rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.None;
-            GraphicsDevice.RasterizerState = rasterizerState;
+            GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
-            FreeCamera = new FreeCamera(Vector3.Zero, 1000f, 0.5f);
-
-            World = Matrix.Identity * Matrix.CreateScale(1, 1, 1) * Matrix.CreateTranslation(0, -20, 200);
-            View = Matrix.CreateLookAt(Vector3.One * 2500, new Vector3(0, 0, 0), Vector3.Up);
-            Projection =
-                Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.1f,
-                    2500000f);
+            World = Matrix.Identity;
+            View = Matrix.CreateLookAt(Vector3.One * 1500, Vector3.Zero, Vector3.Up);
+            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.1f, 250000f);
 
             base.Initialize();
         }
 
-        /// <summary>
-        ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo, despues de Initialize.
-        ///     Escribir aqui el codigo de inicializacion: cargar modelos, texturas, estructuras de optimizacion, el procesamiento
-        ///     que podemos pre calcular para nuestro juego.
-        /// </summary>
         protected override void LoadContent()
         {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
-            Panzer = Content.Load<Model>(ContentFolder3D + "Panzer/Panzer");
-            PanzerEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
-            SceneEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+
+            FreeCamera = new FreeCamera(new Vector3(-2000, 800, -100), 500f, 0.5f);
+
+            Panzer = new TankScene(Content);
             Arbol = new ArbolScene(Content,50);
             Roca = new RockScene(Content,50);
-
-
-            foreach (var mesh in Panzer.Meshes)
-            {
-                // Un mesh puede tener mas de una mesh part (cada una puede tener su propio efecto).
-                foreach (var meshPart in mesh.MeshParts)
-                    meshPart.Effect = PanzerEffect;
-            }
-
 
             base.LoadContent();
         }
@@ -98,54 +71,29 @@ namespace TGC.MonoGame.TP
 
         protected override void Update(GameTime gameTime)
         {
-            // Aca deberiamos poner toda la logica de actualizacion del juego.
-            // Capturar Input teclado
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-            {
-                //Salgo del juego.
-                Exit();
-            }
-
-            KeyboardState keyboardState = Keyboard.GetState();
-            MouseState mouseState = Mouse.GetState();
-            FreeCamera.Update(gameTime, keyboardState, mouseState);
-
-            //Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
-
-            //World = Matrix.CreateRotationY(Rotation);
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))                
+                Exit();//para salir facilmente
 
 
-            
+            FreeCamera.Update(gameTime, Keyboard.GetState(), Mouse.GetState());
+           
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.Black);//fondo
+
             Matrix View = FreeCamera.ViewMatrix;
-            Arbol.Draw(Matrix.Identity, View, Projection);
-            Roca.Draw(Matrix.Identity, View, Projection);
 
+            Arbol.Draw(World, View, Projection);
+            Roca.Draw(World, View, Projection);
+            Panzer.Draw(World, View, Projection);
 
-            PanzerEffect.Parameters["View"].SetValue(View);
-            PanzerEffect.Parameters["Projection"].SetValue(Projection);
-            PanzerEffect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector3());
-
-
-            var modelMeshesBaseTransforms = new Matrix[Panzer.Bones.Count];
-            Panzer.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
-
-            foreach (var mesh in Panzer.Meshes)
-            {
-                var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
-                PanzerEffect.Parameters["World"].SetValue(relativeTransform * World);
-                mesh.Draw();
-            }
+            base.Draw(gameTime);
+            
         }
 
-        /// <summary>
-        ///     Libero los recursos que se cargaron en el juego.
-        /// </summary>
         protected override void UnloadContent()
         {
             // Libero los recursos.

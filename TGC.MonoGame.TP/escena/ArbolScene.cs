@@ -44,6 +44,7 @@ namespace TGC.MonoGame.TP.Content.Models
                     float randomX = (float)(random.NextDouble() * 2 - 1) * MaxDistance;
                     float randomY = 0;
                     float randomZ = (float)(random.NextDouble() * 2 - 1) * MaxDistance;
+
                     newPosition = new Vector3(randomX, randomY, randomZ);
                     positionAccepted = true;
                     foreach (var matrix in WorldMatrices)
