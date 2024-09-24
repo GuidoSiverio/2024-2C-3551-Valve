@@ -19,16 +19,28 @@ float4x4 Projection;
 
 float3 DiffuseColor;
 
+texture ModelTexture;
+sampler2D TextureSampler = sampler_state
+{
+    Texture = (ModelTexture);
+    MagFilter = Linear;
+    MinFilter = Linear;
+    AddressU = Mirror;
+    AddressV = Mirror;
+};
+
 float Time = 0;
 
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;
+	float2 TextureCoordinate : TEXCOORD0;
 };
 
 struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
+	float2 TextureCoordinate : TEXCOORD0;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -42,12 +54,15 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
 
+	output.TextureCoordinate = input.TextureCoordinate;
+
     return output;
 }
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    return float4(DiffuseColor, 1.0);
+    //return float4(DiffuseColor, 1.0);
+	return tex2D(TextureSampler, input.TextureCoordinate);
 }
 
 technique BasicColorDrawing

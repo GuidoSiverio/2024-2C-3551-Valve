@@ -31,6 +31,16 @@ namespace TGC.MonoGame.TP
         public SpriteBatch SpriteBatch { get; set; }//esto para que sera ?
 
         private FreeCamera FreeCamera { get; set; }
+        
+        private Projectile Projectile { get; set; }
+
+        private Matrix ProjectilePosition = Matrix.Identity;
+
+        private Vector3 position = Vector3.Zero;
+
+        private bool isProjectileFired = false;
+
+        private Vector3 projectileVelocity = Vector3.Zero;
 
         public TGCGame()
         {
@@ -64,6 +74,7 @@ namespace TGC.MonoGame.TP
             Panzer = new TankScene(Content);
             Arbol = new ArbolScene(Content,50);
             Roca = new RockScene(Content,50);
+            Projectile = new Projectile(Content);
 
             base.LoadContent();
         }
@@ -74,6 +85,17 @@ namespace TGC.MonoGame.TP
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))                
                 Exit();//para salir facilmente
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Space)){
+                projectileVelocity += Vector3.Forward * 1000f;
+                isProjectileFired = true;
+            }
+                   
+
+            if (isProjectileFired){
+                position -=  projectileVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
+            ProjectilePosition += Matrix.CreateTranslation(position);
 
             FreeCamera.Update(gameTime, Keyboard.GetState(), Mouse.GetState());
            
@@ -89,6 +111,7 @@ namespace TGC.MonoGame.TP
             Arbol.Draw(World, View, Projection);
             Roca.Draw(World, View, Projection);
             Panzer.Draw(World, View, Projection);
+            Projectile.Draw(ProjectilePosition, View, Projection);
 
             base.Draw(gameTime);
             

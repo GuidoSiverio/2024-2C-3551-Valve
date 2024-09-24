@@ -21,10 +21,12 @@ namespace TGC.MonoGame.TP.Content.Models
         public const float MaxDistance = 10000f;
         public const float MinDistance = 1000f;
         private static Random random = new Random();
+
+        private Texture2D RockTexture { get; set; }
         public RockScene(ContentManager content, int numberOfModels)
         {
             Model = content.Load<Model>(ContentFolder3D + "escena/Rock_1");
-
+            RockTexture = content.Load<Texture2D>(ContentFolder3D + "escena/Yeni klasör/Rock_1_Base_Color");
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
 
             foreach (var mesh in Model.Meshes)
@@ -65,7 +67,8 @@ namespace TGC.MonoGame.TP.Content.Models
 
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(projection);
-            Effect.Parameters["DiffuseColor"].SetValue(Color.Brown.ToVector3());
+            //Effect.Parameters["DiffuseColor"].SetValue(Color.Brown.ToVector3());
+            Effect.Parameters["ModelTexture"].SetValue(RockTexture);
 
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
