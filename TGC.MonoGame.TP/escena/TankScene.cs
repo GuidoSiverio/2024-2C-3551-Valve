@@ -21,7 +21,8 @@ namespace TGC.MonoGame.TP.Content.Models
 
         private float Speed { get; set; } = 500f;
         private float RotationSpeed { get; set; } = 0.5f;
-        private float MouseSensitivity { get; set; } = 0.005f; // Sensitivity for turret rotation
+        private float HorizontalMouseSensitivity { get; set; } = 0.005f; // Sensitivity for turret rotation horizontally
+        private float VerticalMouseSensitivity { get; set; } = 0.0025f; // Sensitivity for turret rotation vertically
 
         private MouseState PreviousMouseState;
 
@@ -29,9 +30,9 @@ namespace TGC.MonoGame.TP.Content.Models
         {
             Model = content.Load<Model>(ContentFolder3D + "Panzer/Panzer");
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
+
             foreach (var mesh in Model.Meshes)
-            {                
-                Console.WriteLine(($"Mesh name: {mesh.Name}]"));
+            {
                 foreach (var meshPart in mesh.MeshParts)
                     meshPart.Effect = Effect;
             }
@@ -47,6 +48,7 @@ namespace TGC.MonoGame.TP.Content.Models
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            // Tank Movement (WASD)
             if (keyboardState.IsKeyDown(Keys.A))
                 Rotation += RotationSpeed * deltaTime;
             if (keyboardState.IsKeyDown(Keys.D))
@@ -58,12 +60,12 @@ namespace TGC.MonoGame.TP.Content.Models
             if (keyboardState.IsKeyDown(Keys.S))
                 Position -= forward * Speed * deltaTime;
 
-            // Calculate mouse movement delta for turret rotation
+            // Turret Rotation (Mouse)
             float mouseDeltaX = mouseState.X - PreviousMouseState.X;
             float mouseDeltaY = mouseState.Y - PreviousMouseState.Y;
 
-            TurretRotation -= MouseSensitivity * mouseDeltaX;
-            TurretElevation += MouseSensitivity * mouseDeltaY; 
+            TurretRotation -= HorizontalMouseSensitivity * mouseDeltaX;
+            TurretElevation += VerticalMouseSensitivity * mouseDeltaY; // Invert the Y-axis by adding instead of subtracting
 
             // Clamp turret elevation to a range (e.g., between -45 and 45 degrees)
             TurretElevation = MathHelper.Clamp(TurretElevation, MathHelper.ToRadians(-45f), MathHelper.ToRadians(45f));
@@ -79,13 +81,13 @@ namespace TGC.MonoGame.TP.Content.Models
             // Turret transformation (additional turret rotation and elevation)
             var turretRotationMatrix = Matrix.CreateRotationY(TurretRotation);
             var turretElevationMatrix = Matrix.CreateRotationX(TurretElevation);
-            var turretWorld = turretElevationMatrix * turretRotationMatrix * tankWorld;
 
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(projection);
 
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
+
             foreach (var mesh in Model.Meshes)
             {
                 var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
@@ -95,18 +97,23 @@ namespace TGC.MonoGame.TP.Content.Models
 
                 if (mesh.Name.Contains("Turret"))
                 {
+                    // Apply turret and cannon transformations, only applying tank position, not rotation
+                    var turretWorld = turretElevationMatrix * turretRotationMatrix * Matrix.CreateTranslation(Position);
                     worldMatrix = relativeTransform * turretWorld * world;
-                    color = Color.Red; 
+                    color = Color.Red; // Set desired color for the turret
                 }
                 else if (mesh.Name.Contains("Cannon"))
                 {
+                    // Apply turret and cannon transformations, only applying tank position, not rotation
+                    var turretWorld = turretElevationMatrix * turretRotationMatrix * Matrix.CreateTranslation(Position);
                     worldMatrix = relativeTransform * turretWorld * world;
                     color = Color.Blue; 
                 }
                 else
                 {
+                    // Apply only tank transformations
                     worldMatrix = relativeTransform * tankWorld * world;
-                    color = Color.Green;
+                    color = Color.Green; 
                 }
 
                 Effect.Parameters["World"].SetValue(worldMatrix);
