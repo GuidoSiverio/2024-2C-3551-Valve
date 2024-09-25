@@ -24,17 +24,12 @@ namespace TGC.MonoGame.TP
             ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlane, FarPlane);
         }
 
-        public void Update(Vector3 tankPosition, Vector3 tankForward)
+        public void Update(Vector3 tankPosition, float turretRotation, float turretElevation)
         {
-            // Create a rotation matrix from the tank's forward vector
-            Matrix tankRotation = Matrix.CreateWorld(Vector3.Zero, tankForward, Vector3.Up);
-
-            // Apply the rotation to the offset
-            Vector3 cameraOffset = Vector3.Transform(Offset, tankRotation);
-
-            // Calculate the camera position by adding the offset to the tank's position
+            // Apply the combined rotation to the offset
+            Vector3 cameraOffset = Vector3.Transform(Offset, Matrix.CreateRotationY(turretRotation) * Matrix.CreateRotationX(turretElevation));
             Vector3 cameraPosition = tankPosition + cameraOffset;
-            Vector3 cameraTarget = tankPosition + tankForward;
+            Vector3 cameraTarget = tankPosition + Vector3.Transform(Vector3.Forward, Matrix.CreateRotationY(turretRotation) * Matrix.CreateRotationX(turretElevation));
 
             ViewMatrix = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
         }

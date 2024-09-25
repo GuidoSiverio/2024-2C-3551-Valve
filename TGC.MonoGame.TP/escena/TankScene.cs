@@ -16,25 +16,34 @@ namespace TGC.MonoGame.TP.Content.Models
 
         public Vector3 Position { get; private set; }
         public float Rotation { get; private set; }
-        private float Speed { get; set; } = 500f; 
-        private float RotationSpeed { get; set; } = 0.5f; 
+        public float TurretRotation { get; private set; } // Turret horizontal rotation
+        public float TurretElevation { get; private set; } // Turret vertical rotation
+
+        private float Speed { get; set; } = 500f;
+        private float RotationSpeed { get; set; } = 0.5f;
+        private float MouseSensitivity { get; set; } = 0.005f; // Sensitivity for turret rotation
+
+        private MouseState PreviousMouseState;
 
         public TankScene(ContentManager content)
         {
             Model = content.Load<Model>(ContentFolder3D + "Panzer/Panzer");
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
-
             foreach (var mesh in Model.Meshes)
-            {
+            {                
+                Console.WriteLine(($"Mesh name: {mesh.Name}]"));
                 foreach (var meshPart in mesh.MeshParts)
                     meshPart.Effect = Effect;
             }
 
             Position = Vector3.Zero;
             Rotation = 0f;
+            TurretRotation = 0f; // Initialize turret horizontal rotation
+            TurretElevation = 0f; // Initialize turret vertical rotation
+            PreviousMouseState = Mouse.GetState(); // Initialize previous mouse state
         }
 
-        public void Update(GameTime gameTime, KeyboardState keyboardState)
+        public void Update(GameTime gameTime, KeyboardState keyboardState, MouseState mouseState)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -48,23 +57,60 @@ namespace TGC.MonoGame.TP.Content.Models
                 Position += forward * Speed * deltaTime;
             if (keyboardState.IsKeyDown(Keys.S))
                 Position -= forward * Speed * deltaTime;
+
+            // Calculate mouse movement delta for turret rotation
+            float mouseDeltaX = mouseState.X - PreviousMouseState.X;
+            float mouseDeltaY = mouseState.Y - PreviousMouseState.Y;
+
+            TurretRotation -= MouseSensitivity * mouseDeltaX;
+            TurretElevation += MouseSensitivity * mouseDeltaY; 
+
+            // Clamp turret elevation to a range (e.g., between -45 and 45 degrees)
+            TurretElevation = MathHelper.Clamp(TurretElevation, MathHelper.ToRadians(-45f), MathHelper.ToRadians(45f));
+
+            // Store current mouse state for next frame
+            PreviousMouseState = mouseState;
         }
 
         public void Draw(Matrix world, Matrix view, Matrix projection)
         {
+            // Tank base transformation (movement and body rotation)
             var tankWorld = Matrix.CreateRotationY(Rotation) * Matrix.CreateTranslation(Position);
-            Effect.Parameters["World"].SetValue(tankWorld * world);
+            // Turret transformation (additional turret rotation and elevation)
+            var turretRotationMatrix = Matrix.CreateRotationY(TurretRotation);
+            var turretElevationMatrix = Matrix.CreateRotationX(TurretElevation);
+            var turretWorld = turretElevationMatrix * turretRotationMatrix * tankWorld;
+
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(projection);
-            Effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector3());
 
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
-
             foreach (var mesh in Model.Meshes)
             {
                 var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
-                Effect.Parameters["World"].SetValue(relativeTransform * tankWorld * world);
+                // Determine the appropriate transform and color based on the mesh name
+                Matrix worldMatrix;
+                Color color;
+
+                if (mesh.Name.Contains("Turret"))
+                {
+                    worldMatrix = relativeTransform * turretWorld * world;
+                    color = Color.Red; 
+                }
+                else if (mesh.Name.Contains("Cannon"))
+                {
+                    worldMatrix = relativeTransform * turretWorld * world;
+                    color = Color.Blue; 
+                }
+                else
+                {
+                    worldMatrix = relativeTransform * tankWorld * world;
+                    color = Color.Green;
+                }
+
+                Effect.Parameters["World"].SetValue(worldMatrix);
+                Effect.Parameters["DiffuseColor"].SetValue(color.ToVector3());
                 mesh.Draw();
             }
         }

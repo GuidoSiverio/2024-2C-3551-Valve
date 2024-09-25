@@ -76,9 +76,8 @@ namespace TGC.MonoGame.TP
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit(); //para salir facilmente
 
-            Panzer.Update(gameTime, Keyboard.GetState());
-            Vector3 tankForward = Vector3.Transform(Vector3.Forward, Matrix.CreateRotationY(Panzer.Rotation));
-            FollowCamera.Update(Panzer.Position, tankForward);
+            Panzer.Update(gameTime, Keyboard.GetState(),Mouse.GetState());
+            FollowCamera.Update(Panzer.Position, Panzer.TurretRotation,Panzer.TurretElevation);
 
             base.Update(gameTime);
         }
