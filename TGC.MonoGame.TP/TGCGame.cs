@@ -28,6 +28,7 @@ namespace TGC.MonoGame.TP
         private TankScene Panzer { get; set; }
         private ArbolScene Arbol {  get; set; }
         private RockScene Roca { get; set; }
+        private HeightMapScene HeightMap { get; set; }
         public SpriteBatch SpriteBatch { get; set; }//esto para que sera ?
 
         private FreeCamera FreeCamera { get; set; }
@@ -46,7 +47,7 @@ namespace TGC.MonoGame.TP
 
         protected override void Initialize()
         {
-            GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+            GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             World = Matrix.Identity;
             View = Matrix.CreateLookAt(Vector3.One * 1500, Vector3.Zero, Vector3.Up);
@@ -64,6 +65,9 @@ namespace TGC.MonoGame.TP
             Panzer = new TankScene(Content);
             Arbol = new ArbolScene(Content,50);
             Roca = new RockScene(Content,50);
+
+
+            HeightMap = new HeightMapScene(GraphicsDevice, Content);
 
             base.LoadContent();
         }
@@ -89,6 +93,7 @@ namespace TGC.MonoGame.TP
             Arbol.Draw(World, View, Projection);
             Roca.Draw(World, View, Projection);
             Panzer.Draw(World, View, Projection);
+            HeightMap.Draw(World, View, Projection, GraphicsDevice);
 
             base.Draw(gameTime);
             
