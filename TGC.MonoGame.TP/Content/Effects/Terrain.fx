@@ -20,8 +20,8 @@ texture texDiffuseMap;
 sampler2D diffuseMap = sampler_state
 {
     Texture = (texDiffuseMap);
-    ADDRESSU = WRAP;
-    ADDRESSV = WRAP;
+    ADDRESSU = CLAMP;
+    ADDRESSV = CLAMP;
     MINFILTER = LINEAR;
     MAGFILTER = LINEAR;
     MIPFILTER = LINEAR;
@@ -42,8 +42,8 @@ texture texColorMap;
 sampler2D colorMap = sampler_state
 {
     Texture = (texColorMap);
-    ADDRESSU = WRAP;
-    ADDRESSV = WRAP;
+    ADDRESSU = CLAMP;
+    ADDRESSV = CLAMP;
     MINFILTER = LINEAR;
     MAGFILTER = LINEAR;
     MIPFILTER = LINEAR;

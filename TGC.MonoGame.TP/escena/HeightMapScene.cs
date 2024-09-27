@@ -14,8 +14,6 @@ namespace TGC.MonoGame.TP.Content.Models
         public const string ContentFolderEffects = "Effects/";
         public const string ContentFolderTextures = "Textures/";
 
-
-
         private Texture2D TerrenoHeightMap { get; set; }
         private float _scaleXZ = 50f; //factor de escala para el suelo ancho y largo
         private float _scaleY = 4f; //factor de escala para la altura 
@@ -38,13 +36,13 @@ namespace TGC.MonoGame.TP.Content.Models
 
     public HeightMapScene(GraphicsDevice graphicsDevice, ContentManager content)
         {
-            TerrenoHeightMap = content.Load<Texture2D>(ContentFolderTextures + "heightmap");
-            TerrenoColorMapTexture = content.Load<Texture2D>(ContentFolderTextures + "colormap");
-            TerrenoTexture = content.Load<Texture2D>(ContentFolderTextures + "grass");
-            TerrenoTexture2 = content.Load<Texture2D>(ContentFolderTextures + "ground");
-            TerrenoEfecto = content.Load<Effect>(ContentFolderEffects + "Terrain");
+            TerrenoEfecto = content.Load<Effect>(ContentFolderEffects + "Terrain"); //importante que sea el efecto terrain
+            TerrenoHeightMap = content.Load<Texture2D>(ContentFolderTextures + "hmap5/heightmap");
+            TerrenoColorMapTexture = content.Load<Texture2D>(ContentFolderTextures + "hmap5/colormap");
+            TerrenoTexture = content.Load<Texture2D>(ContentFolderTextures + "hmap5/texturemap");
+            TerrenoTexture2 = content.Load<Texture2D>(ContentFolderTextures + "hmap5/texturemap3");
 
-            LoadHeightmap(graphicsDevice, TerrenoHeightMap, 100, 4, Vector3.Zero);
+            LoadHeightmap(graphicsDevice, TerrenoHeightMap, 150, 10, Vector3.Zero);
 
             //float[,] heightMap= LoadHeightMap(HeightMap);
 
