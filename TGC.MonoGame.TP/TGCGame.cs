@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -26,10 +27,11 @@ namespace TGC.MonoGame.TP
 
         //modelos, efectos y camara 
         private TankScene Panzer { get; set; }
-        private ArbolScene Arbol {  get; set; }
+        private ArbolScene Arbol { get; set; }
         private RockScene Roca { get; set; }
-        public SpriteBatch SpriteBatch { get; set; }//esto para que sera ?
+        public SpriteBatch SpriteBatch { get; set; } //esto para que sera ?
 
+        private FollowCamera FollowCamera { get; set; }
         private FreeCamera FreeCamera { get; set; }
         
         private Projectile Projectile { get; set; }
@@ -41,6 +43,8 @@ namespace TGC.MonoGame.TP
         private bool isProjectileFired = false;
 
         private Vector3 projectileVelocity = Vector3.Zero;
+
+        private List<TankScene> enemyTanks = new List<TankScene>();
 
         public TGCGame()
         {
@@ -60,7 +64,8 @@ namespace TGC.MonoGame.TP
 
             World = Matrix.Identity;
             View = Matrix.CreateLookAt(Vector3.One * 1500, Vector3.Zero, Vector3.Up);
-            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 0.1f, 250000f);
+            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio,
+                0.1f, 250000f);
 
             base.Initialize();
         }
@@ -69,12 +74,14 @@ namespace TGC.MonoGame.TP
         {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            FreeCamera = new FreeCamera(new Vector3(-2000, 800, -100), 500f, 0.5f);
+            FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 600, -1000));
 
-            Panzer = new TankScene(Content);
+            Panzer = new TankScene(Content, false);
+            enemyTanks.Add(new TankScene(Content, true));
+            enemyTanks.Add(new TankScene(Content, true));
+            enemyTanks.Add(new TankScene(Content, true));
             Arbol = new ArbolScene(Content,50);
             Roca = new RockScene(Content,50);
-            Projectile = new Projectile(Content);
 
             base.LoadContent();
         }
@@ -82,39 +89,42 @@ namespace TGC.MonoGame.TP
 
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))                
-                Exit();//para salir facilmente
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit(); //para salir facilmente
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space)){
-                projectileVelocity += Vector3.Forward * 1000f;
+                Projectile = new Projectile(Content, Panzer);
+                //projectileVelocity += position * 1000f;
                 isProjectileFired = true;
             }
                    
 
             if (isProjectileFired){
-                position -=  projectileVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                Projectile.Update(gameTime);
+                //position -=  projectileVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                //ProjectilePosition += Matrix.CreateTranslation(position);
             }
+            
+            Panzer.Update(gameTime, Keyboard.GetState(),Mouse.GetState());
+            FollowCamera.Update(Panzer.Position, Panzer.TurretRotation,Panzer.TurretElevation);
 
-            ProjectilePosition += Matrix.CreateTranslation(position);
-
-            FreeCamera.Update(gameTime, Keyboard.GetState(), Mouse.GetState());
-           
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);//fondo
+            GraphicsDevice.Clear(Color.Black); //fondo
 
-            Matrix View = FreeCamera.ViewMatrix;
-
-            Arbol.Draw(World, View, Projection);
-            Roca.Draw(World, View, Projection);
-            Panzer.Draw(World, View, Projection);
-            Projectile.Draw(ProjectilePosition, View, Projection);
+            Matrix View = FollowCamera.ViewMatrix;
+            Matrix ProjectionCamera = FollowCamera.ProjectionMatrix;
+            Arbol.Draw(World, View, ProjectionCamera);
+            Roca.Draw(World, View, ProjectionCamera);
+            Panzer.Draw(World, View, ProjectionCamera);
+            enemyTanks.ForEach(tank => tank.Draw(World, View, ProjectionCamera));
+            if (isProjectileFired)
+                Projectile.Draw(World, View, ProjectionCamera);
 
             base.Draw(gameTime);
-            
         }
 
         protected override void UnloadContent()
