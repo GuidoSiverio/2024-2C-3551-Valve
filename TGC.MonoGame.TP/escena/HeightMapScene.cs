@@ -37,10 +37,10 @@ namespace TGC.MonoGame.TP.Content.Models
     public HeightMapScene(GraphicsDevice graphicsDevice, ContentManager content)
         {
             TerrenoEfecto = content.Load<Effect>(ContentFolderEffects + "Terrain"); //importante que sea el efecto terrain
-            TerrenoHeightMap = content.Load<Texture2D>(ContentFolderTextures + "hmap5/heightmap");
-            TerrenoColorMapTexture = content.Load<Texture2D>(ContentFolderTextures + "hmap5/colormap");
-            TerrenoTexture = content.Load<Texture2D>(ContentFolderTextures + "hmap5/texturemap");
-            TerrenoTexture2 = content.Load<Texture2D>(ContentFolderTextures + "hmap5/texturemap3");
+            TerrenoHeightMap = content.Load<Texture2D>(ContentFolderTextures + "HeightMapA/heightmap");
+            TerrenoColorMapTexture = content.Load<Texture2D>(ContentFolderTextures + "HeightMapA/colormap");
+            TerrenoTexture = content.Load<Texture2D>(ContentFolderTextures + "HeightMapA/texturemap");
+            TerrenoTexture2 = content.Load<Texture2D>(ContentFolderTextures + "Textura3/texturemap");
 
             LoadHeightmap(graphicsDevice, TerrenoHeightMap, 150, 10, Vector3.Zero);
 

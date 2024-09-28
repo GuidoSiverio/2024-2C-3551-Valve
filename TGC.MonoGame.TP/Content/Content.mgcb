@@ -101,7 +101,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/tgc-logo/tgc-logo.fbx
 
-#begin Textures/hmap5/colormap.png
+#begin Textures/HeightMapA/colormap.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -111,9 +111,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/colormap.png
+/build:Textures/HeightMapA/colormap.png
 
-#begin Textures/hmap5/colormap2.png
+#begin Textures/HeightMapA/colormap2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -123,9 +123,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/colormap2.png
+/build:Textures/HeightMapA/colormap2.png
 
-#begin Textures/hmap5/heightmap.png
+#begin Textures/HeightMapA/heightmap.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -135,9 +135,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/heightmap.png
+/build:Textures/HeightMapA/heightmap.png
 
-#begin Textures/hmap5/heightmap2.png
+#begin Textures/HeightMapA/normalmap.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -147,9 +147,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/heightmap2.png
+/build:Textures/HeightMapA/normalmap.png
 
-#begin Textures/hmap5/heightmap3.png
+#begin Textures/HeightMapA/Shadow.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -159,9 +159,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/heightmap3.png
+/build:Textures/HeightMapA/Shadow.png
 
-#begin Textures/hmap5/normalmap.png
+#begin Textures/HeightMapA/StackedHeight.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -171,9 +171,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/normalmap.png
+/build:Textures/HeightMapA/StackedHeight.png
 
-#begin Textures/hmap5/normalmap2.png
+#begin Textures/HeightMapA/texturemap.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -183,9 +183,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/normalmap2.png
+/build:Textures/HeightMapA/texturemap.png
 
-#begin Textures/hmap5/normalmap3.png
+#begin Textures/HeightMapB/colormap.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -195,9 +195,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/normalmap3.png
+/build:Textures/HeightMapB/colormap.png
 
-#begin Textures/hmap5/Shadow.png
+#begin Textures/HeightMapB/heightmap.jpeg
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -207,9 +207,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/Shadow.png
+/build:Textures/HeightMapB/heightmap.jpeg
 
-#begin Textures/hmap5/StackedHeight.png
+#begin Textures/Textura1/normalmap.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -219,9 +219,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/StackedHeight.png
+/build:Textures/Textura1/normalmap.jpg
 
-#begin Textures/hmap5/texturemap.png
+#begin Textures/Textura1/texturemap.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -231,9 +231,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/texturemap.png
+/build:Textures/Textura1/texturemap.jpg
 
-#begin Textures/hmap5/texturemap2.png
+#begin Textures/Textura2/heightmap.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -243,9 +243,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/texturemap2.png
+/build:Textures/Textura2/heightmap.png
 
-#begin Textures/hmap5/texturemap3.png
+#begin Textures/Textura2/heightmap.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -255,5 +255,89 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/hmap5/texturemap3.png
+/build:Textures/Textura2/heightmap.png
+
+#begin Textures/Textura2/normalmap.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Textura2/normalmap.png
+
+#begin Textures/Textura2/normalmap.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Textura2/normalmap.png
+
+#begin Textures/Textura2/texturemap.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Textura2/texturemap.png
+
+#begin Textures/Textura2/texturemap.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Textura2/texturemap.png
+
+#begin Textures/Textura3/heightmap.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Textura3/heightmap.png
+
+#begin Textures/Textura3/normalmap.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Textura3/normalmap.png
+
+#begin Textures/Textura3/texturemap.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Textura3/texturemap.png
 
