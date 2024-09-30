@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Content.Models;
+using TGC.MonoGame.TP.escena;
 
 
 namespace TGC.MonoGame.TP
@@ -29,6 +30,7 @@ namespace TGC.MonoGame.TP
         private ArbolScene Arbol {  get; set; }
         private RockScene Roca { get; set; }
         private HeightMapScene HeightMap { get; set; }
+        private SkyBoxScene SkyBox { get; set; }
         public SpriteBatch SpriteBatch { get; set; }//esto para que sera ?
 
         private FreeCamera FreeCamera { get; set; }
@@ -68,6 +70,7 @@ namespace TGC.MonoGame.TP
 
 
             HeightMap = new HeightMapScene(GraphicsDevice, Content);
+            SkyBox = new SkyBoxScene(Content,50);
 
             base.LoadContent();
         }
@@ -94,6 +97,7 @@ namespace TGC.MonoGame.TP
             Roca.Draw(World, View, Projection);
             Panzer.Draw(World, View, Projection);
             HeightMap.Draw(World, View, Projection, GraphicsDevice);
+            //SkyBox.Draw(World, View, FreeCamera.);
 
             base.Draw(gameTime);
             
