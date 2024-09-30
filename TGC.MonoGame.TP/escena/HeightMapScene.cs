@@ -10,17 +10,11 @@ namespace TGC.MonoGame.TP.escena
 
     class HeightMapScene
     {
-        //public const string ContentFolder3D = "Models/";
         public const string ContentFolderEffects = "Effects/";
         public const string ContentFolderTextures = "Textures/";
 
         private Texture2D TerrenoHeightMap { get; set; }
-        //private int PrimitiveCount { get; set; }
-        //private Texture2D HeightMapTexture { get; set; }
         private VertexBuffer TerrainVertexBuffer { get; set; }
-        //private IndexBuffer TerrainIndexBuffer { get; set; }
-        
-        //private BasicEffect Effect { get; set; }
         private Texture2D TerrenoColorMapTexture {  get; set; }
         private Texture2D TerrenoTexture1 { get; set; }
         private Texture2D TerrenoTexture2 { get; set; }
@@ -30,6 +24,9 @@ namespace TGC.MonoGame.TP.escena
 
         //Valor de Y para cada par (x,z) del Heightmap
         public int[,] HeightmapData { get; private set; }
+
+        private float _scaleXZ;
+        private float _scaleY;
         //centro del terreno
         public Vector3 Center { get; private set; }
 
@@ -46,25 +43,6 @@ namespace TGC.MonoGame.TP.escena
 
             LoadHeightmap(graphicsDevice, TerrenoHeightMap, 200, 8, Vector3.Zero);
 
-            //float[,] heightMap= LoadHeightMap(HeightMap);
-
-            //PrimitiveCount = (heightMap.GetLength(0) -1) * (heightMap.GetLength(1) -1) * 2;
-
-            //CreateVertexBuffer(heightMap, graphicsDevice);
-
-            //CreateIndexBuffer(heightMap, graphicsDevice);
-
-            //TerrainTexture = content.Load<Texture2D>(ContentFolderTextures + "terrain-texture-3");
-
-            
-            //Effect = new BasicEffect(graphicsDevice)
-            //{
-            //    World = Matrix.Identity,
-            //    TextureEnabled = true,
-            //    Texture = TerrainTexture
-            //};
-            //Effect.EnableDefaultLighting();
-
         }
 
         public void Draw(Matrix world, Matrix view, Matrix projection, GraphicsDevice graphicsDevice)
@@ -73,9 +51,6 @@ namespace TGC.MonoGame.TP.escena
             TerrenoEfecto.Parameters["World"].SetValue(world);
             TerrenoEfecto.Parameters["View"].SetValue(view);
             TerrenoEfecto.Parameters["Projection"].SetValue(projection);
-            //TerrenoEfecto.View = view;
-            //TerrenoEfecto.Projection = projection;
-            //TerrenoEfecto.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector3());
             TerrenoEfecto.Parameters["texColorMap"].SetValue(TerrenoColorMapTexture);
             TerrenoEfecto.Parameters["texDiffuseMap"].SetValue(TerrenoTexture1);
             TerrenoEfecto.Parameters["texDiffuseMap2"].SetValue(TerrenoTexture2);
@@ -119,6 +94,8 @@ namespace TGC.MonoGame.TP.escena
         public void LoadHeightmap(GraphicsDevice graphicsDevice, Texture2D heightmap, float scaleXZ, float scaleY, Vector3 center)
         {
             Center = center;
+            _scaleXZ = scaleXZ;
+            _scaleY = scaleY;
 
             float tx_scale = 1; // 50f;
 
@@ -197,89 +174,45 @@ namespace TGC.MonoGame.TP.escena
             TerrainVertexBuffer = new VertexBuffer(graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, totalVertices, BufferUsage.WriteOnly);
             TerrainVertexBuffer.SetData(data);
         }
-        /*
-        private void CreateVertexBuffer(float[,] heightMap, GraphicsDevice graphicsDevice)
+
+
+        public float Height(float x, float z)
         {
+            var width = HeightmapData.GetLength(0);
+            var length = HeightmapData.GetLength(1);
 
-            int widthHeightMap = heightMap.GetLength(0);//tomamos la cantidad de filas que seria el ancho del mapa
-            int LegthHeightMap = heightMap.GetLength(1);//tomamos la cantidad de columnas que seria el largo del mapa
+            var pos_i = x / _scaleXZ + width / 2.0f;
+            var pos_j = z / _scaleXZ + length / 2.0f;
+            var pi = (int)pos_i;
+            var fracc_i = pos_i - pi;
+            var pj = (int)pos_j;
+            var fracc_j = pos_j - pj;
 
-            var offsetX = widthHeightMap * _scaleXZ * 0.5f;
-            var offsetZ = LegthHeightMap * _scaleXZ * 0.5f;
+            if (pi < 0)
+                pi = 0;
+            else if (pi >= width)
+                pi = width - 1;
 
-            // Create temporary array of vertices.
-            var vertices = new VertexPositionTexture[widthHeightMap * LegthHeightMap];
+            if (pj < 0)
+                pj = 0;
+            else if (pj >= length)
+                pj = length - 1;
 
-            var index = 0;
-            Vector3 position;
-            Vector2 textureCoordinates;
+            var pi1 = pi + 1;
+            var pj1 = pj + 1;
+            if (pi1 >= width)
+                pi1 = width - 1;
+            if (pj1 >= length)
+                pj1 = length - 1;
 
-            for (var x = 0; x < widthHeightMap; x++)
-                for (var z = 0; z < LegthHeightMap; z++)
-                {
-                    position = new Vector3(x * _scaleXZ - offsetX, heightMap[x, z] * _scaleY, z * _scaleXZ - offsetZ);
-                    textureCoordinates = new Vector2((float)x / widthHeightMap, (float)z / LegthHeightMap);
-                    vertices[index] = new VertexPositionTexture(position, textureCoordinates);
-                    index++;
-                }
+            // 2x2 percent closest filtering usual:
+            var H0 = HeightmapData[pi, pj];
+            var H1 = HeightmapData[pi1, pj];
+            var H2 = HeightmapData[pi, pj1];
+            var H3 = HeightmapData[pi1, pj1];
+            var H = (H0 * (1 - fracc_i) + H1 * fracc_i) * (1 - fracc_j) + (H2 * (1 - fracc_i) + H3 * fracc_i) * fracc_j;
 
-            // Create the actual vertex buffer
-            TerrainVertexBuffer = new VertexBuffer(graphicsDevice, VertexPositionTexture.VertexDeclaration, widthHeightMap * LegthHeightMap, BufferUsage.None);
-            TerrainVertexBuffer.SetData(vertices);
+            return H * _scaleY;
         }
-
-        private void CreateIndexBuffer(float[,] heightMap, GraphicsDevice graphicsDevice)
-        {
-            int quadsInX = heightMap.GetLength(0) - 1;
-            int quadsInZ = heightMap.GetLength(1) - 1;
-
-            var indexCount = 3 * 2 * quadsInX * quadsInZ;
-
-            var indices = new ushort[indexCount];
-            var index = 0;
-
-            int right;
-            int top;
-            int bottom;
-
-            var vertexCountX = quadsInX + 1;
-            for (var x = 0; x < quadsInX; x++)
-                for (var z = 0; z < quadsInZ; z++)
-                {
-                    right = x + 1;
-                    bottom = z * vertexCountX;
-                    top = (z + 1) * vertexCountX;
-
-                    //  d __ c  
-                    //   | /|
-                    //   |/_|
-                    //  a    b
-
-                    var a = (ushort)(x + bottom);
-                    var b = (ushort)(right + bottom);
-                    var c = (ushort)(right + top);
-                    var d = (ushort)(x + top);
-
-                    // ACB
-                    indices[index] = a;
-                    index++;
-                    indices[index] = c;
-                    index++;
-                    indices[index] = b;
-                    index++;
-
-                    // ADC
-                    indices[index] = a;
-                    index++;
-                    indices[index] = d;
-                    index++;
-                    indices[index] = c;
-                    index++;
-                }
-
-            TerrainIndexBuffer = new IndexBuffer(graphicsDevice, IndexElementSize.SixteenBits, indexCount, BufferUsage.None);
-            TerrainIndexBuffer.SetData(indices);
-        }
-        */
     }
 }

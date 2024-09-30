@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using TGC.MonoGame.TP.escena;
 
 namespace TGC.MonoGame.TP.Content.Models
 {
@@ -61,7 +62,7 @@ namespace TGC.MonoGame.TP.Content.Models
             }
         }
 
-        public void Draw(Matrix world, Matrix view, Matrix projection)
+        public void Draw(Matrix world, Matrix view, Matrix projection, HeightMapScene heightMap)
         {
             Effect.Parameters["World"].SetValue(world);
             Effect.Parameters["View"].SetValue(view);
@@ -77,7 +78,9 @@ namespace TGC.MonoGame.TP.Content.Models
 
                 foreach (var worldMatrix in WorldMatrices)
                 {
-                    Effect.Parameters["World"].SetValue(meshWorld * worldMatrix);
+                    float height = heightMap.Height(worldMatrix.Translation.X, worldMatrix.Translation.Z);
+
+                    Effect.Parameters["World"].SetValue(meshWorld * worldMatrix * Matrix.CreateTranslation(0, height, 0));
 
                     mesh.Draw();
                 }

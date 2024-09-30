@@ -70,7 +70,7 @@ namespace TGC.MonoGame.TP
 
 
             HeightMap = new HeightMapScene(GraphicsDevice, Content);
-            SkyBox = new SkyBoxScene(Content,50);
+            //SkyBox = new SkyBoxScene(Content,50);
 
             base.LoadContent();
         }
@@ -92,11 +92,13 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.Clear(Color.Black);//fondo
 
             Matrix View = FreeCamera.ViewMatrix;
-
-            Arbol.Draw(World, View, Projection);
-            Roca.Draw(World, View, Projection);
-            Panzer.Draw(World, View, Projection);
             HeightMap.Draw(World, View, Projection, GraphicsDevice);
+            float alturaHeigth = HeightMap.Height(0,0);
+
+            Arbol.Draw(World, View, Projection, HeightMap);
+            Roca.Draw(World, View, Projection, HeightMap);
+            Panzer.Draw(World * Matrix.CreateTranslation(0,alturaHeigth,0), View, Projection);
+            
             //SkyBox.Draw(World, View, FreeCamera.);
 
             base.Draw(gameTime);
