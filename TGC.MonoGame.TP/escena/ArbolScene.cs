@@ -23,10 +23,12 @@ namespace TGC.MonoGame.TP.Content.Models
         private Effect Effect { get; set; }
         private static Random random = new Random();
 
+        private Texture2D TreeTexture { get; set; }
+
         public ArbolScene(ContentManager content, int numberOfModels)
         {
             Model = content.Load<Model>(ContentFolder3D + "escena/plant");
-
+            TreeTexture = content.Load<Texture2D>(ContentFolder3D + "escena/textures/indoor plant_2_COL");
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
 
             foreach (var mesh in Model.Meshes)
@@ -67,7 +69,8 @@ namespace TGC.MonoGame.TP.Content.Models
             Effect.Parameters["World"].SetValue(world);
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(projection);
-            Effect.Parameters["DiffuseColor"].SetValue(Color.Green.ToVector3());
+            //Effect.Parameters["DiffuseColor"].SetValue(Color.Green.ToVector3());
+            Effect.Parameters["ModelTexture"].SetValue(TreeTexture);
 
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
