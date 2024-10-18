@@ -108,6 +108,12 @@
 /processorParam:Quality=Best
 /build:Sounds/background.mp3
 
+#begin Sounds/ingame.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/ingame.mp3
+
 #begin Textures/HUD/lifebar_empty.png
 /importer:TextureImporter
 /processor:TextureProcessor

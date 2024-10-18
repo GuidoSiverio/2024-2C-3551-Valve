@@ -1,6 +1,8 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using TGC.MonoGame.TP.Content.Models;
 
 
@@ -26,6 +28,7 @@ namespace TGC.MonoGame.TP
         //menu
         private Menu _menu;
         private HUD _hud;
+        private Song inGameMusic { get; set; }
         private bool _juegoIniciado = false;
         public float screenHeight;
         public float screenWidth;
@@ -35,6 +38,7 @@ namespace TGC.MonoGame.TP
         private ArbolScene Arbol { get; set; }
         private RockScene Roca { get; set; }
         public SpriteBatch SpriteBatch { get; set; } //esto para que sera ?
+        private bool _playing = false;
 
         private FollowCamera FollowCamera { get; set; }
         private FreeCamera FreeCamera { get; set; }
@@ -81,6 +85,7 @@ namespace TGC.MonoGame.TP
             Arbol = new ArbolScene(Content, 50);
             Roca = new RockScene(Content, 50);
 
+            inGameMusic = Content.Load<Song>(ContentFolderSounds + "ingame");
             _menu.LoadContent(Content);
             _hud.LoadContent(Content);
 
@@ -100,14 +105,24 @@ namespace TGC.MonoGame.TP
             {
                 FollowCamera.Update(Panzer.Position, Panzer.TurretRotation, Panzer.TurretElevation);
                 Panzer.Update(gameTime, Keyboard.GetState(), Mouse.GetState());
+                if (!_playing)
+                {
+                    MediaPlayer.Play(inGameMusic);
+                    _playing = true;
+                }
             }
 
             if (_juegoIniciado && Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
+
                 _juegoIniciado = false;
                 _menu.StartMusic();
+                if (_playing)
+                {
+                    MediaPlayer.Stop();
+                    _playing = false;
+                }
             }
-          
             base.Update(gameTime);
         }
 

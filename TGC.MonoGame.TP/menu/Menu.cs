@@ -61,7 +61,7 @@ namespace TGC.MonoGame.TP
         public Menu(GraphicsDevice graphicsDevice, ContentManager contentManager)
         {
             GraphicsDevice = graphicsDevice;
-
+            MasterSound = MediaPlayer.Volume;
             ScreenWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             ScreenHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
 
@@ -147,6 +147,9 @@ namespace TGC.MonoGame.TP
 
                             SoundIsOn = false;
                             ResetMouse = false;
+                            
+                            MasterSound = 0;
+                            MediaPlayer.Volume = 0;
                             break;
                         }
                         case false when _soundOnButton.Contains(mousePosition) && ResetMouse:
@@ -156,6 +159,9 @@ namespace TGC.MonoGame.TP
 
                             SoundIsOn = true;
                             ResetMouse = false;
+                            
+                            MasterSound = 1;
+                            MediaPlayer.Volume = 1;
                             break;
                         }
                     }

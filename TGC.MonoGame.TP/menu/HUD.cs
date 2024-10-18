@@ -154,12 +154,15 @@ namespace TGC.MonoGame.TP
                 Color.Yellow
              );
             
-            spriteBatch.DrawString(FontArial, "OLEADA: " + Oleada, new Vector2(ScreenWidth - 250, ScreenHeight - 150), Color.Blue);
+            const int marginLeft = 20;
+            const int marginTop = 20;
+            const int lineSpacing = 50;
 
-            spriteBatch.DrawString(FontArial, "PUNTOS: " + puntos, new Vector2(ScreenWidth - 250, ScreenHeight - 100), Color.Blue);
+            spriteBatch.DrawString(FontArial, "OLEADA: " + Oleada, new Vector2(marginLeft, marginTop), Color.Red);
 
-            spriteBatch.DrawString(FontArial, "TIEMPO: " + (int)elapsedTime + " SEGS", new Vector2(ScreenWidth - 250, ScreenHeight - 50), Color.Blue);
+            spriteBatch.DrawString(FontArial, "PUNTOS: " + puntos, new Vector2(marginLeft, marginTop + lineSpacing), Color.Red);
 
+            spriteBatch.DrawString(FontArial, "TIEMPO: " + (int)elapsedTime + " SEGS", new Vector2(marginLeft, marginTop + 2 * lineSpacing), Color.Red);
             if(siguienteOleada)
             {
                 spriteBatch.DrawString(FontArial, "OLEADA COMPLETADA", new Vector2(ScreenWidth - 1055, ScreenHeight - 525), Color.GreenYellow);
