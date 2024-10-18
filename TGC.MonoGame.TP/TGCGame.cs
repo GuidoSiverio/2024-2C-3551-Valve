@@ -23,6 +23,12 @@ namespace TGC.MonoGame.TP
         private Matrix View { get; set; }
         private Matrix Projection { get; set; }
 
+        //menu
+        private Menu _menu;
+        private HUD _hud;
+        private bool _juegoIniciado = false;
+        public float screenHeight;
+        public float screenWidth;
 
         //modelos, efectos y camara 
         private TankScene Panzer { get; set; }
@@ -32,6 +38,8 @@ namespace TGC.MonoGame.TP
 
         private FollowCamera FollowCamera { get; set; }
         private FreeCamera FreeCamera { get; set; }
+        private StaticCamera _staticCamera;
+
 
         public TGCGame()
         {
@@ -53,7 +61,13 @@ namespace TGC.MonoGame.TP
             View = Matrix.CreateLookAt(Vector3.One * 1500, Vector3.Zero, Vector3.Up);
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio,
                 0.1f, 250000f);
+            screenHeight = GraphicsDevice.Viewport.Height;
+            screenWidth = GraphicsDevice.Viewport.Width;
+            _staticCamera = new StaticCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(400, 200, 1300),
+                Vector3.Forward, Vector3.Up);
 
+            _menu = new Menu(GraphicsDevice, Content);
+            _hud = new HUD(screenWidth, screenHeight);
             base.Initialize();
         }
 
@@ -67,18 +81,33 @@ namespace TGC.MonoGame.TP
             Arbol = new ArbolScene(Content, 50);
             Roca = new RockScene(Content, 50);
 
+            _menu.LoadContent(Content);
+            _hud.LoadContent(Content);
+
             base.LoadContent();
         }
 
 
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit(); //para salir facilmente
+            if (!_juegoIniciado)
+            {
+                Panzer.Position = new Vector3(-5000, 0, -11000);
+                _menu.Update(ref _juegoIniciado);
+            }
 
-            Panzer.Update(gameTime, Keyboard.GetState(),Mouse.GetState());
-            FollowCamera.Update(Panzer.Position, Panzer.TurretRotation,Panzer.TurretElevation);
+            if (_juegoIniciado)
+            {
+                FollowCamera.Update(Panzer.Position, Panzer.TurretRotation, Panzer.TurretElevation);
+                Panzer.Update(gameTime, Keyboard.GetState(), Mouse.GetState());
+            }
 
+            if (_juegoIniciado && Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                _juegoIniciado = false;
+                _menu.StartMusic();
+            }
+          
             base.Update(gameTime);
         }
 
@@ -86,11 +115,35 @@ namespace TGC.MonoGame.TP
         {
             GraphicsDevice.Clear(Color.Black); //fondo
 
-            Matrix View = FollowCamera.ViewMatrix;
-            Matrix ProjectionCamera = FollowCamera.ProjectionMatrix;
-            Arbol.Draw(World, View, ProjectionCamera);
-            Roca.Draw(World, View, ProjectionCamera);
-            Panzer.Draw(World, View, ProjectionCamera);
+            if (!_juegoIniciado)
+            {
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+                GraphicsDevice.BlendState = BlendState.AlphaBlend;
+
+                GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
+
+                Camera camara = _staticCamera;
+                Panzer.Draw(World, camara.View, camara.Projection);
+
+
+                SpriteBatch.Begin();
+                _menu.Draw(SpriteBatch);
+                SpriteBatch.End();
+
+            }
+            else
+            {
+                Matrix View = FollowCamera.ViewMatrix;
+                Matrix ProjectionCamera = FollowCamera.ProjectionMatrix;
+                Arbol.Draw(World, View, ProjectionCamera);
+                Roca.Draw(World, View, ProjectionCamera);
+                Panzer.Draw(World, View, ProjectionCamera);
+                SpriteBatch.Begin();
+                _hud.Draw(SpriteBatch);
+                SpriteBatch.End();
+            }
+
+
 
             base.Draw(gameTime);
         }
@@ -102,5 +155,6 @@ namespace TGC.MonoGame.TP
 
             base.UnloadContent();
         }
+        
     }
 }

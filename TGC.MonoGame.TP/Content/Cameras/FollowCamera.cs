@@ -33,5 +33,6 @@ namespace TGC.MonoGame.TP
 
             ViewMatrix = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
         }
+        
     }
 }

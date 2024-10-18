@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TGC.MonoGame.TP.Content.Models
 {
-    class TankScene
+    public class TankScene
     {
         public const string ContentFolder3D = "Models/";
         public const string ContentFolderEffects = "Effects/";
@@ -14,7 +14,7 @@ namespace TGC.MonoGame.TP.Content.Models
         private Model Model { get; set; }
         private Effect Effect { get; set; }
 
-        public Vector3 Position { get; private set; }
+        public Vector3 Position { get; set; }
         public float Rotation { get; private set; }
         public float TurretRotation { get; private set; } // Turret horizontal rotation
         public float TurretElevation { get; private set; } // Turret vertical rotation
@@ -22,6 +22,8 @@ namespace TGC.MonoGame.TP.Content.Models
         private float Speed { get; set; } = 500f;
         private float RotationSpeed { get; set; } = 0.5f;
         private float MouseSensitivity { get; set; } = 0.005f; // Sensitivity for turret rotation
+        
+        public float _currentLife { get; set; }
 
         private MouseState PreviousMouseState;
 
@@ -31,7 +33,6 @@ namespace TGC.MonoGame.TP.Content.Models
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
             foreach (var mesh in Model.Meshes)
             {                
-                Console.WriteLine(($"Mesh name: {mesh.Name}]"));
                 foreach (var meshPart in mesh.MeshParts)
                     meshPart.Effect = Effect;
             }
